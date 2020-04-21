@@ -7,9 +7,6 @@ const base = new Airtable({ apiKey: 'keyCxnlep0bgotSrX' }).base('appN1J6yscNwlzb
 import Header from './header';
 import Footer from './footer';
 import Modal from './modal';
-import Tile from './tile';
-
-import dynamicSort from '../helpers/dynamicSort';
 
 function clientsReducer(state, action) {
   return [...state, ...action];
@@ -44,37 +41,6 @@ function App() {
     });
 
   }, []); // Pass empty array to only run once on mount
-
-  function getHomePageActivities(client) {
-    if (client) {
-      if (client.fields['LimeadeAccessToken']) {
-        console.log('Getting visible Home page activities for ' + client.fields['Account Name']);
-        $.ajax({
-          url: 'https://api.limeade.com/api/activities/?types=5&status=1&attributes=1&contents=32319',
-          type: 'GET',
-          dataType: 'json',
-          headers: {
-            Authorization: 'Bearer ' + client.fields['LimeadeAccessToken']
-          },
-          contentType: 'application/json; charset=utf-8'
-        }).done(result => {
-          const tiles = result.Data;
-
-          // Do stuff here
-          console.log(tiles);
-          setTiles(tiles);
-
-        }).fail((xhr, textStatus, error) => {
-          console.error(`${client.fields['Account Name']} - GET Activities has failed`);
-        });
-
-      } else {
-        console.error(`${client.fields['Account Name']} has no LimeadeAccessToken`);
-      }
-    } else {
-      console.log('No client has been selected');
-    }
-  }
 
   function massUpdater(activities) {
 
@@ -119,15 +85,15 @@ function App() {
 
   }
 
-  function getAllActivities() {
+  function getActivity() {
     if (selectedClient) {
       if (selectedClient.fields['LimeadeAccessToken']) {
 
-        console.log('Getting all activities (past, current, and scheduled) for ' + selectedClient.fields['Account Name']);
+        console.log('Getting CIE 2351 for ' + selectedClient.fields['Account Name']);
         $('#spinner').show();
 
         $.ajax({
-          url: 'https://api.limeade.com/api/admin/activity',
+          url: 'https://api.limeade.com/api/admin/activity/-2351',
           type: 'GET',
           dataType: 'json',
           headers: {
@@ -136,12 +102,13 @@ function App() {
           contentType: 'application/json; charset=utf-8'
         }).done((result) => {
           $('#spinner').hide();
-          const activities = result.Data;
+          const activity = result.Data;
+          activity.employerName = selectedClient.fields['Account Name'];
 
           // handles any updates needed for every activity in the platform
           // massUpdater(activities);
 
-          setActivities(activities);
+          setActivities([...activities, activity]);
 
         }).fail((xhr, textStatus, error) => {
           console.error(`${selectedClient.fields['Account Name']} - GET ActivityLifecycle has failed`);
@@ -163,57 +130,9 @@ function App() {
     });
   }
 
-  function openActivity(activity) {
-    setSelectedActivity(activity);
-
-    $('#tileModal').modal();
-  }
-
-  function changeStartDate(e) {
-    const newActivity = selectedActivity;
-    newActivity.StartDate = e.target.value;
-    setSelectedActivity(newActivity);
-  }
-
-  function changeEndDate(e) {
-    const newActivity = selectedActivity;
-    newActivity.EndDate = e.target.value;
-    setSelectedActivity(newActivity);
-  }
-
-  function changeTrackingText(e) {
-    const newActivity = selectedActivity;
-    newActivity.ActivityType = e.target.value;
-    setSelectedActivity(newActivity);
-  }
-
-  function changePoints(e) {
-    const newActivity = selectedActivity;
-    newActivity.ActivityReward.Value = e.target.value;
-    setSelectedActivity(newActivity);
-  }
-
-  function changeName(e) {
-    const newActivity = selectedActivity;
-    newActivity.Name = e.target.value;
-    setSelectedActivity(newActivity);
-  }
-
-  function changeShortDescription(e) {
-    const newActivity = selectedActivity;
-    newActivity.ShortDescription = e.target.value;
-    setSelectedActivity(newActivity);
-  }
-
   function renderEmployerNames() {
     return clients.map((client) => {
       return <option key={client.id}>{client.fields['Limeade e=']}</option>;
-    });
-  }
-
-  function renderTiles() {
-    return tiles.map((tile) => {
-      return <Tile key={tile.Id} tile={tile} />;
     });
   }
 
@@ -221,23 +140,23 @@ function App() {
 
     // Filter out CIEs and past activities
     const filteredActivities = activities.filter(activity => {
-      return activity.ChallengeId > 0 && activity.Status !== 'Completed';
+      return activity.ChallengeId === -2351;
     });
-
-    filteredActivities.sort(dynamicSort('Status'));
 
     return filteredActivities.map((activity) => {
       return (
-        <tr key={activity.ChallengeId} onClick={() => openActivity(activity)}>
+        <tr key={activity.employerName}>
+          <td>{activity.employerName}</td>
           <td>{activity.Name}</td>
-          <td>{activity.ChallengeId}</td>
-          <td>{moment(activity.StartDate).format('ll')}</td>
-          <td>{moment(activity.EndDate).format('ll')}</td>
-          <td>{activity.Status}</td>
+          <td>{activity.EventCode}</td>
+          <td>{activity.ActivityReward.Value}</td>
+          <td>{activity.DisplayPriority}</td>
         </tr>
       );
     });
   }
+
+  console.log(activities);
 
   return (
     <div id="app">
@@ -251,25 +170,18 @@ function App() {
         </select>
       </div>
 
-      {/* <button type="button" className="btn btn-primary" onClick={() => this.getHomePageActivities(this.state.selectedClient)}>What's on My Home Page?</button>
-      <p>(show's the home page as seen by the Admin)</p> */}
-
-      <button type="button" className="btn btn-primary" onClick={getAllActivities}>I Want Everything</button>
+      <button type="button" className="btn btn-primary" onClick={getActivity}>I Want Everything</button>
       <img id="spinner" src="images/spinner.svg" />
       <p>(shows all challenges current and scheduled)</p>
-
-      <div id="tileContainer">
-        {renderTiles()}
-      </div>
 
       <table className="table table-hover table-striped" id="activities">
         <thead>
           <tr>
+            <th scope="col">EmployerName</th>
             <th scope="col">Name</th>
-            <th scope="col">ChallengeId</th>
-            <th scope="col">StartDate</th>
-            <th scope="col">EndDate</th>
-            <th scope="col">Status</th>
+            <th scope="col">EventCode</th>
+            <th scope="col">Points</th>
+            <th scope="col">DisplayPriority</th>
           </tr>
         </thead>
         <tbody>
@@ -278,17 +190,6 @@ function App() {
       </table>
 
       <Footer />
-
-      <Modal
-        client={selectedClient}
-        activity={selectedActivity}
-        changeStartDate={(e) => changeStartDate(e)}
-        changeEndDate={(e) => changeEndDate(e)}
-        changeTrackingText={(e) => changeTrackingText(e)}
-        changePoints={(e) => changePoints(e)}
-        changeName={(e) => changeName(e)}
-        changeShortDescription={(e) => changeShortDescription(e)}
-      />
 
     </div>
   );
