@@ -8,23 +8,21 @@ import Header from './header';
 import Footer from './footer';
 import Modal from './modal';
 
-function clientsReducer(state, action) {
-  return [...state, ...action];
-}
+import csvToJson from '../helpers/csv_to_json';
 
-function activitiesReducer(state, action) {
+function reducer(state, action) {
   return [...state, ...action];
 }
 
 /* globals $ */
 function App() {
-  const [selectedClient, setSelectedClient] = useState(null);
+  const [clientsFromCsv, setClientsFromCsv] = useState([]);
   const [clients, dispatchClients] = React.useReducer(
-    clientsReducer,
+    reducer,
     [] // initial clients
   );
   const [activities, dispatchActivities] = React.useReducer(
-    clientsReducer,
+    reducer,
     [] // initial activities
   );
 
@@ -48,12 +46,33 @@ function App() {
 
   function massUpdater() {
 
-    const coachingClients = clients.filter(client => client.fields['Coaching'] === 'Yes');
+    // TODO: Only run if a CSV is present
 
-    // Set counter based on coachingClients
-    $('#counter').html(`<p><span id="finishedUploads">0</span> / ${coachingClients.length}</p>`);
+    // Create list of account names from the CSV
+    const accountNamesList = clientsFromCsv.map(client => client['Account: Account Name']);
 
-    coachingClients.map(client => {
+    // Filter clients by the list of account names in the user uploaded CSV
+    const filteredClients = clients.filter(client => {
+      return accountNamesList.includes(client.fields['Salesforce Name']);
+    });
+
+    // Sorts the list of clients
+    filteredClients.sort((a, b) => {
+      const nameA = a.fields['Salesforce Name'].toLowerCase();
+      const nameB = b.fields['Salesforce Name'].toLowerCase();
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      return 0;
+    });
+
+    // Set counter based on filteredClients
+    $('#counter').html(`<p><span id="finishedUploads">0</span> / ${filteredClients.length}</p>`);
+
+    filteredClients.map(client => {
 
       // 1 - Get current ID -2351 using limeade's modern API
       if (client.fields['LimeadeAccessToken']) {
@@ -84,45 +103,8 @@ function App() {
         console.error(`${client.fields['Account Name']} has no LimeadeAccessToken`);
       }
 
-      // 2 - Update CIE 2351 using limeade's old transporter API
-
     });
 
-  }
-
-  function getActivities() {
-    if (selectedClient) {
-      if (selectedClient.fields['LimeadeAccessToken']) {
-
-        console.log('Getting CIE 2351 for ' + selectedClient.fields['Account Name']);
-        $('#spinner').show();
-
-        $.ajax({
-          url: 'https://api.limeade.com/api/admin/activity/-2351',
-          type: 'GET',
-          dataType: 'json',
-          headers: {
-            Authorization: 'Bearer ' + selectedClient.fields['LimeadeAccessToken']
-          },
-          contentType: 'application/json; charset=utf-8'
-        }).done((result) => {
-          $('#spinner').hide();
-          const activity = result.Data;
-          activity.employerName = selectedClient.fields['Account Name'];
-
-          // handles any updates needed for every activity in the platform
-          dispatchActivities([...activities, activity]);
-
-        }).fail((xhr, textStatus, error) => {
-          console.error(`${selectedClient.fields['Account Name']} - GET ActivityLifecycle has failed`);
-        });
-
-      } else {
-        console.error(`${selectedClient.fields['Account Name']} has no LimeadeAccessToken`);
-      }
-    } else {
-      console.log('No client has been selected');
-    }
   }
 
   function createCSV(activity) {
@@ -246,6 +228,17 @@ function App() {
     }
   }
 
+  function handleClientsCsvFiles(e) {
+    let reader = new FileReader();
+    reader.onload = function() {
+      // Parse the client csv and update state
+      const clientsJson = csvToJson(reader.result);
+      setClientsFromCsv(clientsJson);
+    };
+    // Start reading the file. When it is done, calls the onload event defined above.
+    reader.readAsBinaryString(e.target.files[0]);
+  }
+
   function renderActivities() {
 
     return activities.map((activity) => {
@@ -271,6 +264,12 @@ function App() {
   return (
     <div id="app">
       <Header />
+
+      <div className="form-group">
+        <label htmlFor="csvClientsInput">Import from CSV</label>
+        <input type="file" className="form-control-file" id="csvClientsInput" accept="*.csv" onChange={(e) => handleClientsCsvFiles(e)} />
+        <small className="form-text text-muted text-left">Note: file matches on Salesforce Name in Clients Most up to Date.</small>
+      </div>
 
       <div className="form-group">
         <button type="button" className="btn btn-primary" onClick={massUpdater}>Download Activities</button>
