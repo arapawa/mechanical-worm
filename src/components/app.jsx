@@ -44,9 +44,7 @@ function App() {
 
   }, []); // Pass empty array to only run once on mount
 
-  function massUpdater() {
-
-    // TODO: Only run if a CSV is present
+  function getActivities() {
 
     // Create list of account names from the CSV
     const accountNamesList = clientsFromCsv.map(client => client['Account: Account Name']);
@@ -253,7 +251,7 @@ function App() {
           <td>{activity.ActivityReward.Value}</td>
           <td>{activity.DisplayPriority}</td>
           <td>
-            <button type="button" className="btn btn-primary" onClick={() => performUpdate(activity)}>Upload</button>
+            <button type="button" className="btn btn-primary" onClick={() => performUpdate(activity)}>Update</button>
           </td>
         </tr>
       );
@@ -272,7 +270,7 @@ function App() {
       </div>
 
       <div className="form-group">
-        <button type="button" className="btn btn-primary" onClick={massUpdater}>Download Activities</button>
+        <button type="button" className="btn btn-primary" onClick={getActivities}>Download Activities</button>
         <div id="counter"></div>
       </div>
 
@@ -283,7 +281,7 @@ function App() {
             <th scope="col">Name</th>
             <th scope="col">Points</th>
             <th scope="col">DisplayPriority</th>
-            <th scope="col">Upload</th>
+            <th scope="col">Update</th>
           </tr>
         </thead>
         <tbody>
