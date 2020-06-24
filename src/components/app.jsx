@@ -106,40 +106,39 @@ function App() {
   }
 
   function createCSV(activity) {
-
-  	let data = [[
-  		'EmployerName',
-  		'EventId',
-  		'EventName',
-  		'DisplayPriority',
-  		'RewardType',
-  		'PointsAwarded',
-  		'RewardDescription',
-  		'AllowSameDayDuplicates',
-  		'IsOngoing',
-  		'IsDisabled',
-  		'ShowInProgram',
-  		'IsSelfReport',
-  		'DataFeedMode',
-  		'Notify',
-  		'ButtonText',
-  		'TargetUrl',
-  		'EventImageUrl',
-  		'MaxOccurrences',
-  		'StartDate',
-  		'EndDate',
-  		'ViewPages',
-  		'Dimensions',
-  		'ShortDescription',
-  		'HtmlDescription',
-  		'SubgroupId',
-  		'Field1Name',
-  		'Field1Value',
+    let data = [[
+      'EmployerName',
+      'EventId',
+      'EventName',
+      'DisplayPriority',
+      'RewardType',
+      'PointsAwarded',
+      'RewardDescription',
+      'AllowSameDayDuplicates',
+      'IsOngoing',
+      'IsDisabled',
+      'ShowInProgram',
+      'IsSelfReport',
+      'DataFeedMode',
+      'Notify',
+      'ButtonText',
+      'TargetUrl',
+      'EventImageUrl',
+      'MaxOccurrences',
+      'StartDate',
+      'EndDate',
+      'ViewPages',
+      'Dimensions',
+      'ShortDescription',
+      'HtmlDescription',
+      'SubgroupId',
+      'Field1Name',
+      'Field1Value',
       'Field2Name',
       'Field2Value',
       'Field3Name',
       'Field3Value'
-  	]];
+    ]];
 
     // Pulled from original activity
     const employerName = activity.client.fields['Limeade e='];
@@ -172,7 +171,7 @@ function App() {
 			'0', // IsDisabled
 			'1', // ShowInProgram
 			'0', // IsSelfReport
-		  '0', // DataFeedMode
+      '0', // DataFeedMode
 			'0', // Notify
 			'', // ButtonText
 			'', // TargetUrl
@@ -183,18 +182,18 @@ function App() {
 			'', // ViewPages
 			'', // Dimensions
 			'', // ShortDescription
-	    `"${htmlDescription.replace(/"/g, '""')}"`,
+      `"${htmlDescription.replace(/"/g, '""')}"`,
 			'', // SubgroupId
 			'', // Field1Name
 			'', // Field1Value
-	    '', // Field2Name
+      '', // Field2Name
 			'', // Field2Value
-	    '', // Field3Name
+      '', // Field3Name
 			'' // Field3Value
 		]);
 
     return data;
-  };
+  }
 
   function performUpdate(activity) {
     if (activity.AboutChallenge.includes('anxiety_antidote')) {
