@@ -46,13 +46,20 @@ function App() {
 
   function getActivities() {
 
-    // Create list of account names from the CSV
-    const accountNamesList = clientsFromCsv.map(client => client['Account: Account Name']);
+    let filteredClients;
 
-    // Filter clients by the list of account names in the user uploaded CSV
-    const filteredClients = clients.filter(client => {
-      return accountNamesList.includes(client.fields['Salesforce Name']);
-    });
+    // If using a CSV file
+    if (clientsFromCsv.length > 0) {
+      // Create list of account names from the CSV
+      const accountNamesList = clientsFromCsv.map(client => client['Account: Account Name']);
+
+      // Filter clients by the list of account names in the user uploaded CSV
+      filteredClients = clients.filter(client => {
+        return accountNamesList.includes(client.fields['Salesforce Name']);
+      });
+    } else {
+      filteredClients = clients.slice();
+    }
 
     // Sorts the list of clients
     filteredClients.sort((a, b) => {
@@ -93,8 +100,8 @@ function App() {
           activity.client = client;
           dispatchActivities([...activities, activity]);
 
-        }).fail((xhr, textStatus, error) => {
-          console.error(`${client.fields['Account Name']} - GET ActivityLifecycle has failed`);
+        }).fail((request, status, error) => {
+          console.log(`${client.fields['Account Name']} - ${request.responseJSON.Error.Message}`);    
         });
 
       } else {
@@ -153,6 +160,8 @@ function App() {
       '<div class="coaching-programs-container">',
       '<div class="coaching-programs-container"><div class="coaching-program-callout anxiety_antidote" style="margin-bottom: 20px;"><a href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DAnxiety%20Antidote%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"> <img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-anxiety-antidote.png" alt="Anxiety Antidote" /></a></div>'
     );
+
+    // https://cdn.adurolife.com/assets/hp/images/hp-tile-decoding-drinking.png
 
     // Static values for this update
     const maxOccurrences = '1';
