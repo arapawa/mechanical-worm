@@ -50,6 +50,7 @@ function App() {
 
     // If using a CSV file
     if (clientsFromCsv.length > 0) {
+
       // Create list of account names from the CSV
       const accountNamesList = clientsFromCsv.map(client => client['Account: Account Name']);
 
@@ -57,22 +58,10 @@ function App() {
       filteredClients = clients.filter(client => {
         return accountNamesList.includes(client.fields['Salesforce Name']);
       });
-    } else {
-      filteredClients = clients.slice();
-    }
 
-    // Sorts the list of clients
-    filteredClients.sort((a, b) => {
-      const nameA = a.fields['Salesforce Name'].toLowerCase();
-      const nameB = b.fields['Salesforce Name'].toLowerCase();
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
-      return 0;
-    });
+    } else {
+      filteredClients = Array.from(clients);
+    }
 
     // Set counter based on filteredClients
     $('#counter').html(`<p><span id="finishedUploads">0</span> / ${filteredClients.length}</p>`);
@@ -101,7 +90,7 @@ function App() {
           dispatchActivities([...activities, activity]);
 
         }).fail((request, status, error) => {
-          console.log(`${client.fields['Account Name']} - ${request.responseJSON.Error.Message}`);    
+          console.log(`${client.fields['Account Name']} - ${request.responseJSON.Error.Message}`);
         });
 
       } else {
@@ -154,14 +143,9 @@ function App() {
     const displayPriority = activity.DisplayPriority;
     const pointsAwarded = activity.ActivityReward.Value;
     const eventImageUrl = activity.ChallengeLogoURL;
+    const showInProgram = activity.DisplayInProgram ? '1' : '0';
 
-    // Add new path to the beginning of the coaching-programs-container
-    const htmlDescription = activity.AboutChallenge.replace(
-      '<div class="coaching-programs-container">',
-      '<div class="coaching-programs-container"><div class="coaching-program-callout anxiety_antidote" style="margin-bottom: 20px;"><a href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DAnxiety%20Antidote%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"> <img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-anxiety-antidote.png" alt="Anxiety Antidote" /></a></div>'
-    );
-
-    // https://cdn.adurolife.com/assets/hp/images/hp-tile-decoding-drinking.png
+    const htmlDescription = '<p>Health &amp; Fitness focuses on key health metrics and managing the many aspects that contribute to your lifestyle, such as, nutrition, activity, sleep, and stress. This can help you achieve greater financial stability, improve your engagement and resilience at work, and help generate stronger connections to your community.</p><p style="margin-top: 10px;"><strong>Start by clicking one of our focused 6-week Paths below &mdash; and look for other resources with the red Health &amp; Fitness flag! Each features six interactive sessions along with weekly surveys (completion required to earn points).</strong></p><div style="margin: 20px 0;"><a style="display: block;" href="https://amp.adurolife.com/referral/limeade-signup" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/App_CTA_HF.png" alt="Install the Aduro app" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/redirect?url=https%3A//wellmetricssurveys.secure.force.com/Calendar/ProgramCalendarV2%3Fe=%5Be%5D%26formType=%26calendarName=Ignite+Your+Life%26participantCode=%5Bparticipantcode%5D" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/Coaching_CTA_HF.png" alt="Schedule 1:1 Coaching" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DDecoding Drinking%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-decoding-drinking.png" alt="Decoding Drinking" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DAnxiety%20Antidote%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-anxiety-antidote.png" alt="Anxiety Antidote" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DStress%20Relief%20Toolkit%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-stress-toolkit.png" alt="Stress Relief Toolkit" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DRethinking%20Stress%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-rethinking-stress.png" alt="Rethinking Stress" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DMission%20Nutrition%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-mission-nutrition.png" alt="Mission Nutrition" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DMood%20%252526%20Food%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite+Your+Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-mood-and-food.png" alt="Mood and Food" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DLighten%20Up%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-lighten-up.png" alt="Lighten Up" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DBreathe%20Easy%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-breathe-easy.png" alt="Breathe Easy" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DSleep+mode%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite+Your+Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-sleep-mode.png" alt="Breathe Easy" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DGet%20Moving%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-get-moving.png" alt="Breathe Easy" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DFast%20Fitness%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-fast-fitness.png" alt="" /> </a></div>';
 
     // Static values for this update
     const maxOccurrences = '1';
@@ -178,7 +162,7 @@ function App() {
 			'1', // AllowSameDay
 			'0', // IsOngoing
 			'0', // IsDisabled
-			'1', // ShowInProgram
+			showInProgram,
 			'0', // IsSelfReport
       '0', // DataFeedMode
 			'0', // Notify
@@ -205,8 +189,8 @@ function App() {
   }
 
   function performUpdate(activity) {
-    if (activity.AboutChallenge.includes('anxiety_antidote')) {
-      console.log('anxiety_antidote found, update not needed');
+    if (activity.AboutChallenge.includes('Decoding Drinking')) {
+      console.log('Decoding Drinking found, update not needed');
     } else {
 
       const employerName = activity.client.fields['Limeade e='];
@@ -247,7 +231,22 @@ function App() {
 
   function renderActivities() {
 
-    return activities.map((activity) => {
+    let sortedActivities = Array.from(activities);
+
+    // Sorts the list of activities
+    sortedActivities.sort((a, b) => {
+      const nameA = a.client.fields['Account Name'].toLowerCase();
+      const nameB = b.client.fields['Account Name'].toLowerCase();
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      return 0;
+    });
+
+    return sortedActivities.map((activity) => {
       const employerName = activity.client.fields['Limeade e='];
       const domain = activity.client.fields['Domain'];
       const eventId = activity.ChallengeId * -1;
@@ -266,7 +265,7 @@ function App() {
     });
 
   }
-
+  
   return (
     <div id="app">
       <Header />
