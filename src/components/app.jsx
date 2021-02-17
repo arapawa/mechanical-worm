@@ -72,7 +72,7 @@ function App() {
       if (client.fields['LimeadeAccessToken']) {
 
         $.ajax({
-          url: 'https://api.limeade.com/api/admin/activity/-2351',
+          url: 'https://api.limeade.com/api/admin/activity/-2355',
           type: 'GET',
           dataType: 'json',
           headers: {
@@ -189,8 +189,8 @@ function App() {
   }
 
   function performUpdate(activity) {
-    if (!activity.AboutChallenge.includes('Decoding Drinking')) {
-      console.log('Decoding Drinking not found, update unnecessary');
+    if (activity.AboutChallenge.includes('Building Strong Youth')) {
+      console.log('Building Strong Youth found, update unnecessary');
     } else {
 
       const employerName = activity.client.fields['Limeade e='];
