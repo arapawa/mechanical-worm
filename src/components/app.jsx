@@ -53,10 +53,8 @@ function App() {
     // If using a CSV file
     if (clientsFromCsv.length > 0) {
 
-      console.log('clients', clients);
       // Create list of account names from the CSV
       const accountNamesList = clientsFromCsv.map(client => client['Account']);
-      console.log('accountNamesList', accountNamesList);
 
       // Filter clients by the list of account names in the user uploaded CSV
       filteredClients = clients.filter(client => {
