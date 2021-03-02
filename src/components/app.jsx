@@ -4,6 +4,8 @@ import moment from 'moment';
 import Airtable from 'airtable';
 const base = new Airtable({ apiKey: 'keyCxnlep0bgotSrX' }).base('appHXXoVD1tn9QATh');
 
+import Papa from 'papaparse'; // using Papaparse library for FileReader and parsing to Json
+
 import Header from './header';
 import Footer from './footer';
 import Modal from './modal';
@@ -222,14 +224,14 @@ function App() {
   }
 
   function handleClientsCsvFiles(e) {
-    let reader = new FileReader();
-    reader.onload = function() {
-      // Parse the client csv and update state
-      const clientsJson = csvToJson(reader.result);
-      setClientsFromCsv(clientsJson);
-    };
-    // Start reading the file. When it is done, calls the onload event defined above.
-    reader.readAsBinaryString(e.target.files[0]);
+    const file = e.target.files[0];
+    Papa.parse(file, {
+      header: true,
+      complete: function(results) {
+        console.log('Clients:', results.data);
+        setClientsFromCsv(results.data);
+      }
+    });
   }
 
   function renderActivities() {
