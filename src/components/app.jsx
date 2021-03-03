@@ -71,11 +71,11 @@ function App() {
 
     filteredClients.map(client => {
 
-      // 1 - Get current ID -2355 using limeade's modern API
+      // 1 - Get current ID -1391 using limeade's modern API
       if (client.fields['LimeadeAccessToken']) {
 
         $.ajax({
-          url: 'https://api.limeade.com/api/admin/activity/-2355',
+          url: 'https://api.limeade.com/api/admin/activity/-1391',
           type: 'GET',
           dataType: 'json',
           headers: {
@@ -148,7 +148,7 @@ function App() {
     const eventImageUrl = activity.ChallengeLogoURL;
     const showInProgram = activity.DisplayInProgram ? '1' : '0';
 
-    const htmlDescription = '<p>Relationships &amp; Community focuses on your connection with others. Healthy social connections and all supportive relationships can improve your health and well-being. Caring and being cared for by others builds and strengthens community and belonging.</p><div style="margin: 1em 0;"><a style="display: block;" href="https://amp.adurolife.com/referral/limeade-signup" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/dsjx/template/aspects-of-life/App-CTA.png" alt="Install the Aduro app" /></a></div><div style="margin-bottom: 1em;"><a style="display: block;" href="/api/redirect?url=https%3A//wellmetricssurveys.secure.force.com/Calendar/ProgramCalendarV2%3Fe=%5Be%5D%26formType=%26calendarName=Ignite+Your+Life%26participantCode=%5Bparticipantcode%5D" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/dsjx/template/aspects-of-life/Coaching-CTA.png" alt="Schedule 1:1 Coaching" /></a></div><div style="margin-bottom: 1em;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DParental+Fundamentals%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DElevate+Your+Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/dsjx/template/aspects-of-life/Parental-Fundamentals-Path-Graphic.png" alt="Parental Fundamentals" /></a></div><div style="margin-bottom: 1em;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DAdventures%20in%20Parenting%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/dsjx/template/aspects-of-life/Adventures-in-Parenting-Path-Graphic.png" alt="Adventures in Parenting" /></a></div><div style="margin-bottom: 1em;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DEffective%20Listening%20Skills%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/dsjx/template/aspects-of-life/Effective-Listening-Path-Graphic.png" alt="Effective Listening Skills" /></a></div><div style="margin-bottom: 1em;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DNew+Expectations%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DElevate+Your+Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/dsjx/template/aspects-of-life/New-Expectations-Path-Graphic.png" alt="New Expectations" /></a></div><div style="margin-bottom: 1em;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DBuilding%20Strong%20Youth%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/jbrn/assets/template/aspects-of-life/building-strong-youth.png" alt="Building Strong Youth" /></a></div>';
+    const htmlDescription = '<p>Wherever you are sitting or standing, you have a ton of power. What do you want to accomplish in the next year? Watch<strong> <a href="https://vimeo.com/adurolife/review/479996269/7d11942586" target="_blank" rel="noopener">this video</a></strong> to get excited about your possibilities.</p><p>&nbsp;</p><p>Use the <strong><a href="https://cdn.adurolife.com/pjrz/coaching/documents/workbooks/Open-to-Possibility-Workbook.pdf" target="_blank" rel="noopener">Open to Possibility Worksheet</a></strong> to write down your ideas for this year, your goals for this month, and your commitment for today.</p><p>&nbsp;</p><hr size="1" /><h2 style="text-align: center;">Watch the video <a href="https://vimeo.com/adurolife/review/479996269/7d11942586" target="_blank" rel="noopener">HERE</a>.</h2><hr size="1" /><p style="text-align: center;">After watching the video and getting started on the worksheet, be sure to fill out <strong><a href="/api/Redirect?url=https%3A%2F%2Fsurvey.clicktools.com%2Fapp%2Fsurvey%2Fgo.jsp%3Fiv%3D2mqxa2p044ous%26q1%3D%5Bparticipantcode%5D%26q2%3D%5Be%5D%22" target="_blank" rel="noopener">the survey</a></strong> to confirm that you have completed this activity.</p>';
 
     // Static values for this update
     const maxOccurrences = '1';
@@ -192,8 +192,8 @@ function App() {
   }
 
   function performUpdate(activity) {
-    if (activity.AboutChallenge.includes('Building Strong Youth')) {
-      console.log('Building Strong Youth found, update unnecessary');
+    if (activity.AboutChallenge.includes('clicktools')) {
+      console.log('clicktools found, update unnecessary');
     } else {
 
       const employerName = activity.client.fields['Limeade e='];
@@ -210,7 +210,13 @@ function App() {
       };
 
       $.post(url, params).done((response) => {
-        $('#' + employerName.replace(/\s*/g, '')).addClass('bg-success text-white');
+        // check if Limeade silently fails
+        if (response.includes('error') || response.includes('err') ) {
+          $('#' + employerName.replace(/\s*/g, '')).addClass('bg-danger text-white');
+          console.error(`Error for ${employerName} ${response}`);
+        } else { // success
+          $('#' + employerName.replace(/\s*/g, '')).addClass('bg-success text-white');
+        }
       }).fail((request, status, error) => {
         $('#' + employerName.replace(/\s*/g, '')).addClass('bg-danger text-white');
         console.error(request.status);
