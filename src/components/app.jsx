@@ -192,8 +192,8 @@ function App() {
   }
 
   function performUpdate(activity) {
-    if (activity.AboutChallenge.includes('Building Strong Youth')) {
-      console.log('Building Strong Youth found, update unnecessary');
+    if (activity.AboutChallenge.includes('clicktools')) {
+      console.log('clicktools found, update unnecessary');
     } else {
 
       const employerName = activity.client.fields['Limeade e='];
@@ -210,7 +210,13 @@ function App() {
       };
 
       $.post(url, params).done((response) => {
-        $('#' + employerName.replace(/\s*/g, '')).addClass('bg-success text-white');
+        // check if Limeade silently fails
+        if (response.includes('error') || response.includes('err') ) {
+          $('#' + employerName.replace(/\s*/g, '')).addClass('bg-danger text-white');
+          console.error(`Error for ${employerName} ${response}`);
+        } else { // success
+          $('#' + employerName.replace(/\s*/g, '')).addClass('bg-success text-white');
+        }
       }).fail((request, status, error) => {
         $('#' + employerName.replace(/\s*/g, '')).addClass('bg-danger text-white');
         console.error(request.status);
