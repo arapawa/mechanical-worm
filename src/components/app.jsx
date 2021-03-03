@@ -4,6 +4,8 @@ import moment from 'moment';
 import Airtable from 'airtable';
 const base = new Airtable({ apiKey: 'keyCxnlep0bgotSrX' }).base('appHXXoVD1tn9QATh');
 
+import Papa from 'papaparse'; // using Papaparse library for FileReader and parsing to Json
+
 import Header from './header';
 import Footer from './footer';
 import Modal from './modal';
@@ -52,7 +54,7 @@ function App() {
     if (clientsFromCsv.length > 0) {
 
       // Create list of account names from the CSV
-      const accountNamesList = clientsFromCsv.map(client => client['Account: Account Name']);
+      const accountNamesList = clientsFromCsv.map(client => client['Account']);
 
       // Filter clients by the list of account names in the user uploaded CSV
       filteredClients = clients.filter(client => {
@@ -62,17 +64,18 @@ function App() {
     } else {
       filteredClients = Array.from(clients);
     }
+    console.log('filteredClients', filteredClients);
 
     // Set counter based on filteredClients
     $('#counter').html(`<p><span id="finishedUploads">0</span> / ${filteredClients.length}</p>`);
 
     filteredClients.map(client => {
 
-      // 1 - Get current ID -2351 using limeade's modern API
+      // 1 - Get current ID -2355 using limeade's modern API
       if (client.fields['LimeadeAccessToken']) {
 
         $.ajax({
-          url: 'https://api.limeade.com/api/admin/activity/-2351',
+          url: 'https://api.limeade.com/api/admin/activity/-2355',
           type: 'GET',
           dataType: 'json',
           headers: {
@@ -145,7 +148,7 @@ function App() {
     const eventImageUrl = activity.ChallengeLogoURL;
     const showInProgram = activity.DisplayInProgram ? '1' : '0';
 
-    const htmlDescription = '<p>Health &amp; Fitness focuses on key health metrics and managing the many aspects that contribute to your lifestyle, such as, nutrition, activity, sleep, and stress. This can help you achieve greater financial stability, improve your engagement and resilience at work, and help generate stronger connections to your community.</p><p style="margin-top: 10px;"><strong>Start by clicking one of our focused 6-week Paths below &mdash; and look for other resources with the red Health &amp; Fitness flag! Each features six interactive sessions along with weekly surveys (completion required to earn points).</strong></p><div style="margin: 20px 0;"><a style="display: block;" href="https://amp.adurolife.com/referral/limeade-signup" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/App_CTA_HF.png" alt="Install the Aduro app" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/redirect?url=https%3A//wellmetricssurveys.secure.force.com/Calendar/ProgramCalendarV2%3Fe=%5Be%5D%26formType=%26calendarName=Ignite+Your+Life%26participantCode=%5Bparticipantcode%5D" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/Coaching_CTA_HF.png" alt="Schedule 1:1 Coaching" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DMission%20Nutrition%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-mission-nutrition.png" alt="Mission Nutrition" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DMood%20%252526%20Food%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite+Your+Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-mood-and-food.png" alt="Mood and Food" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DLighten%20Up%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-lighten-up.png" alt="Lighten Up" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DBreathe%20Easy%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-breathe-easy.png" alt="Breathe Easy" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DSleep+mode%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite+Your+Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-sleep-mode.png" alt="Breathe Easy" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DGet%20Moving%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-get-moving.png" alt="Breathe Easy" /></a></div><div style="margin-bottom: 20px;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DFast%20Fitness%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/assets/hp/images/hp-tile-fast-fitness.png" alt="" /> </a></div>';
+    const htmlDescription = '<p>Relationships &amp; Community focuses on your connection with others. Healthy social connections and all supportive relationships can improve your health and well-being. Caring and being cared for by others builds and strengthens community and belonging.</p><div style="margin: 1em 0;"><a style="display: block;" href="https://amp.adurolife.com/referral/limeade-signup" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/dsjx/template/aspects-of-life/App-CTA.png" alt="Install the Aduro app" /></a></div><div style="margin-bottom: 1em;"><a style="display: block;" href="/api/redirect?url=https%3A//wellmetricssurveys.secure.force.com/Calendar/ProgramCalendarV2%3Fe=%5Be%5D%26formType=%26calendarName=Ignite+Your+Life%26participantCode=%5Bparticipantcode%5D" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/dsjx/template/aspects-of-life/Coaching-CTA.png" alt="Schedule 1:1 Coaching" /></a></div><div style="margin-bottom: 1em;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DParental+Fundamentals%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DElevate+Your+Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/dsjx/template/aspects-of-life/Parental-Fundamentals-Path-Graphic.png" alt="Parental Fundamentals" /></a></div><div style="margin-bottom: 1em;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DAdventures%20in%20Parenting%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/dsjx/template/aspects-of-life/Adventures-in-Parenting-Path-Graphic.png" alt="Adventures in Parenting" /></a></div><div style="margin-bottom: 1em;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DEffective%20Listening%20Skills%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/dsjx/template/aspects-of-life/Effective-Listening-Path-Graphic.png" alt="Effective Listening Skills" /></a></div><div style="margin-bottom: 1em;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DNew+Expectations%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DElevate+Your+Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/dsjx/template/aspects-of-life/New-Expectations-Path-Graphic.png" alt="New Expectations" /></a></div><div style="margin-bottom: 1em;"><a style="display: block;" href="/api/Redirect?url=https%3A%2F%2Fwellmetricssurveys.secure.force.com%2FEvent%2FCoachingEventCheckin%3Fp%3D%5Be%5D%26cpName%3DBuilding%20Strong%20Youth%26participantCode%3D%5Bparticipantcode%5D%26eventType%3DIgnite%20Your%20Life" target="_blank" rel="noopener"><img style="width: 100%;" src="https://cdn.adurolife.com/jbrn/assets/template/aspects-of-life/building-strong-youth.png" alt="Building Strong Youth" /></a></div>';
 
     // Static values for this update
     const maxOccurrences = '1';
@@ -189,8 +192,8 @@ function App() {
   }
 
   function performUpdate(activity) {
-    if (!activity.AboutChallenge.includes('Decoding Drinking')) {
-      console.log('Decoding Drinking not found, update unnecessary');
+    if (activity.AboutChallenge.includes('Building Strong Youth')) {
+      console.log('Building Strong Youth found, update unnecessary');
     } else {
 
       const employerName = activity.client.fields['Limeade e='];
@@ -219,14 +222,14 @@ function App() {
   }
 
   function handleClientsCsvFiles(e) {
-    let reader = new FileReader();
-    reader.onload = function() {
-      // Parse the client csv and update state
-      const clientsJson = csvToJson(reader.result);
-      setClientsFromCsv(clientsJson);
-    };
-    // Start reading the file. When it is done, calls the onload event defined above.
-    reader.readAsBinaryString(e.target.files[0]);
+    const file = e.target.files[0];
+    Papa.parse(file, {
+      header: true,
+      complete: function(results) {
+        console.log('Clients:', results.data);
+        setClientsFromCsv(results.data);
+      }
+    });
   }
 
   function renderActivities() {
@@ -273,7 +276,7 @@ function App() {
       <div className="form-group">
         <label htmlFor="csvClientsInput">Import from CSV</label>
         <input type="file" className="form-control-file" id="csvClientsInput" accept="*.csv" onChange={(e) => handleClientsCsvFiles(e)} />
-        <small className="form-text text-muted text-left">Note: file matches on Salesforce Name in Clients Most up to Date.</small>
+        <small className="form-text text-muted text-left">Note: file matches <code>Account</code> in .csv with <code>Salesforce Name</code> in Clients Most up to Date.</small>
       </div>
 
       <div className="form-group">
